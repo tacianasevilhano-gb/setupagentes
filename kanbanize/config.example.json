@@ -1,0 +1,8 @@
+{
+  "subdomain": "grupoboticario",
+  "api_url": "https://grupoboticario.kanbanize.com/api/v2",
+  "read_only": "false",
+  "tool_profile": "essential",
+  "default_workspace_id": null,
+  "notes": "Real config is written by setup.ps1 to ~/.config/kanbanize/config.json. Secrets go to ~/.config/kanbanize/.env and must never be committed."
+}
