@@ -8,18 +8,44 @@ Configures API access to the Grupo Boticário Businessmap (Kanbanize) account an
 
 ### Prerequisites
 
-- PowerShell 7+ (`pwsh`)
+- PowerShell 5.1+ (Windows nativo) **ou** PowerShell 7+ (`pwsh`)
 - Node.js 22+ (for the optional MCP package)
-- Secret `KANBANIZE_API_KEY` injected in the Cloud Agent environment
+- Variável/secret `KANBANIZE_API_KEY`
 
-### Setup
+### Setup no Windows
+
+O erro `O termo 'pwsh' não é reconhecido` significa que o PowerShell 7 não está instalado. Use o PowerShell nativo:
+
+```powershell
+# 1) Defina a API key nesta sessão (ou use o secret do ambiente)
+$env:KANBANIZE_API_KEY = "sua-chave"
+
+# 2) A partir da pasta do repositório
+cd caminho\para\setupagentes
+.\kanbanize\setup.cmd
+```
+
+Ou, manualmente com Windows PowerShell 5.1:
+
+```powershell
+New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.config\kanbanize" | Out-Null
+Copy-Item .\kanbanize\setup.ps1 "$env:USERPROFILE\.config\kanbanize\setup.ps1" -Force
+powershell -NoProfile -ExecutionPolicy Bypass -File "$env:USERPROFILE\.config\kanbanize\setup.ps1"
+```
+
+Opcional — instalar PowerShell 7 e usar `pwsh`:
+
+```powershell
+winget install --id Microsoft.PowerShell -e
+# Feche e reabra o terminal, depois:
+pwsh -NoProfile -File "$env:USERPROFILE\.config\kanbanize\setup.ps1"
+```
+
+### Setup no Linux / macOS / Cloud Agent
 
 ```bash
-# From the repo (first time)
 mkdir -p ~/.config/kanbanize
 cp kanbanize/setup.ps1 ~/.config/kanbanize/setup.ps1
-
-# Run
 pwsh -NoProfile -File ~/.config/kanbanize/setup.ps1
 ```
 
@@ -35,9 +61,11 @@ export PATH="$HOME/.npm-global/bin:$PATH"
 | Path | Contents |
 | --- | --- |
 | `~/.config/kanbanize/config.json` | Non-secret account metadata |
-| `~/.config/kanbanize/.env` | API token + Businessmap env vars (mode 600) |
+| `~/.config/kanbanize/.env` | API token + Businessmap env vars (mode 600 on Unix) |
 | `~/.config/kanbanize/mcp.snippet.json` | Ready-to-paste MCP client snippet |
 | `~/.config/kanbanize/setup.ps1` | Idempotent launcher |
+
+No Windows o diretório equivalente é `%USERPROFILE%\.config\kanbanize\`.
 
 ### Environment variables
 

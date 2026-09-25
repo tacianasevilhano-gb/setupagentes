@@ -1,5 +1,5 @@
 #!/usr/bin/env pwsh
-#Requires -Version 7.0
+#Requires -Version 5.1
 <#
 .SYNOPSIS
   Configure Kanbanize / Businessmap credentials for Cursor agents.
@@ -7,7 +7,9 @@
 .DESCRIPTION
   Reads credentials from the environment, validates them against the
   Businessmap API v2, and writes local config under ~/.config/kanbanize
-  (or $XDG_CONFIG_HOME/kanbanize).
+  (or $XDG_CONFIG_HOME/kanbanize / %USERPROFILE%\.config\kanbanize).
+
+  Works with PowerShell 7 (pwsh) and Windows PowerShell 5.1 (powershell.exe).
 
   Required:
     KANBANIZE_API_KEY          API key from My Account → API
@@ -23,7 +25,12 @@
     KANBANIZE_INSTALL_MCP      If "1" or "true", install @edicarlos.lds/businessmap-mcp globally
 
 .EXAMPLE
+  # Linux / macOS / Cloud Agent (PowerShell 7)
   pwsh -NoProfile -File ~/.config/kanbanize/setup.ps1
+
+.EXAMPLE
+  # Windows PowerShell 5.1 (sem pwsh)
+  powershell -NoProfile -ExecutionPolicy Bypass -File "$env:USERPROFILE\.config\kanbanize\setup.ps1"
 #>
 
 Set-StrictMode -Version Latest
@@ -238,4 +245,12 @@ Write-Host ("  API URL:   {0}" -f $apiUrl)
 Write-Host ("  Config:    {0}" -f $configDir)
 Write-Host ''
 Write-Host 'Re-run anytime with:'
-Write-Host '  pwsh -NoProfile -File ~/.config/kanbanize/setup.ps1'
+$onWindows = ($env:OS -eq 'Windows_NT')
+if ($onWindows) {
+    Write-Host ('  powershell -NoProfile -ExecutionPolicy Bypass -File "{0}"' -f $targetScript)
+    if (Get-Command pwsh -ErrorAction SilentlyContinue) {
+        Write-Host ('  pwsh -NoProfile -File "{0}"' -f $targetScript)
+    }
+} else {
+    Write-Host '  pwsh -NoProfile -File ~/.config/kanbanize/setup.ps1'
+}
