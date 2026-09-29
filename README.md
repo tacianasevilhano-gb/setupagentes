@@ -9,36 +9,43 @@ Configures API access to the Grupo Boticário Businessmap (Kanbanize) account an
 ### Prerequisites
 
 - PowerShell 5.1+ (Windows nativo) **ou** PowerShell 7+ (`pwsh`)
-- Node.js 22+ (for the optional MCP package)
-- Variável/secret `KANBANIZE_API_KEY`
+- Git (só se for clonar o repositório)
+- Variável/secret `KANBANIZE_API_KEY` (Businessmap → My Account → API)
 
-### Setup no Windows
+### Setup no Windows (cole estes comandos)
 
-O erro `O termo 'pwsh' não é reconhecido` significa que o PowerShell 7 não está instalado. Use o PowerShell nativo:
+Você precisa estar **fora** de `C:\WINDOWS\system32`. O caminho Unix `~/.config/...` **não funciona** no Windows — use `$env:USERPROFILE\.config\kanbanize\`.
+
+#### Opção A — baixar só o script (mais rápido)
+
+Cole no PowerShell (pode começar em `System32`):
 
 ```powershell
-# 1) Defina a API key nesta sessão (ou use o secret do ambiente)
-$env:KANBANIZE_API_KEY = "sua-chave"
+$dir = "$env:USERPROFILE\.config\kanbanize"
+New-Item -ItemType Directory -Force -Path $dir | Out-Null
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/tacianasevilhano-gb/setupagentes/cursor/kanbanize-credentials-setup-5be9/kanbanize/setup.ps1" -OutFile "$dir\setup.ps1"
 
-# 2) A partir da pasta do repositório
-cd caminho\para\setupagentes
+$env:KANBANIZE_API_KEY = "cole-sua-chave-aqui"
+pwsh -NoProfile -ExecutionPolicy Bypass -File "$dir\setup.ps1"
+```
+
+Se `pwsh` não existir, troque a última linha por:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File "$dir\setup.ps1"
+```
+
+#### Opção B — clonar o repositório
+
+```powershell
+cd $env:USERPROFILE
+git clone https://github.com/tacianasevilhano-gb/setupagentes.git
+cd setupagentes
+git fetch origin cursor/kanbanize-credentials-setup-5be9
+git checkout cursor/kanbanize-credentials-setup-5be9
+
+$env:KANBANIZE_API_KEY = "cole-sua-chave-aqui"
 .\kanbanize\setup.cmd
-```
-
-Ou, manualmente com Windows PowerShell 5.1:
-
-```powershell
-New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.config\kanbanize" | Out-Null
-Copy-Item .\kanbanize\setup.ps1 "$env:USERPROFILE\.config\kanbanize\setup.ps1" -Force
-powershell -NoProfile -ExecutionPolicy Bypass -File "$env:USERPROFILE\.config\kanbanize\setup.ps1"
-```
-
-Opcional — instalar PowerShell 7 e usar `pwsh`:
-
-```powershell
-winget install --id Microsoft.PowerShell -e
-# Feche e reabra o terminal, depois:
-pwsh -NoProfile -File "$env:USERPROFILE\.config\kanbanize\setup.ps1"
 ```
 
 ### Setup no Linux / macOS / Cloud Agent
@@ -46,6 +53,7 @@ pwsh -NoProfile -File "$env:USERPROFILE\.config\kanbanize\setup.ps1"
 ```bash
 mkdir -p ~/.config/kanbanize
 cp kanbanize/setup.ps1 ~/.config/kanbanize/setup.ps1
+export KANBANIZE_API_KEY="sua-chave"
 pwsh -NoProfile -File ~/.config/kanbanize/setup.ps1
 ```
 
@@ -58,14 +66,12 @@ export PATH="$HOME/.npm-global/bin:$PATH"
 
 ### What it writes
 
-| Path | Contents |
-| --- | --- |
-| `~/.config/kanbanize/config.json` | Non-secret account metadata |
-| `~/.config/kanbanize/.env` | API token + Businessmap env vars (mode 600 on Unix) |
-| `~/.config/kanbanize/mcp.snippet.json` | Ready-to-paste MCP client snippet |
-| `~/.config/kanbanize/setup.ps1` | Idempotent launcher |
-
-No Windows o diretório equivalente é `%USERPROFILE%\.config\kanbanize\`.
+| Path (Linux/macOS) | Path (Windows) | Contents |
+| --- | --- | --- |
+| `~/.config/kanbanize/config.json` | `%USERPROFILE%\.config\kanbanize\config.json` | Non-secret account metadata |
+| `~/.config/kanbanize/.env` | `%USERPROFILE%\.config\kanbanize\.env` | API token + Businessmap env vars |
+| `~/.config/kanbanize/mcp.snippet.json` | `%USERPROFILE%\.config\kanbanize\mcp.snippet.json` | MCP client snippet |
+| `~/.config/kanbanize/setup.ps1` | `%USERPROFILE%\.config\kanbanize\setup.ps1` | Idempotent launcher |
 
 ### Environment variables
 
