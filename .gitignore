@@ -1,0 +1,7 @@
+# Never commit local Kanbanize secrets
+.config/kanbanize/.env
+kanbanize/.env
+.env
+.env.*
+!.env.example
+!kanbanize/env.example
